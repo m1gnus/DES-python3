@@ -55,3 +55,13 @@ S8 = [
         [7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8],
         [2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11]
 ]
+
+SB = []
+SB.append(S1)
+SB.append(S2)
+SB.append(S3)
+SB.append(S4)
+SB.append(S5)
+SB.append(S6)
+SB.append(S7)
+SB.append(S8)
