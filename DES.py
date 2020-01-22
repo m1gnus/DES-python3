@@ -13,55 +13,65 @@ from Exp_Perms import *
 from Err_codes import *
 from utils import *
 
-ciphertext = ''
-plaintext = ''
-key = ''
-IV = ''
-triple = False
+def create_keys(key): # Create round keys by following the schedule
+    print("Generating key schedule...")
+    K = []
+    C = []
+    D = []
+    K.append(pad_bytes(perm(pad_bytes(string_to_bin(key), 64), KP), 56))
+    C.append(K[0][:28])
+    D.append(K[0][28:])
+    for i in range(1,17):
+        C.append(shift_bytes_left(C[i-1], KS[i-1]))
+        D.append(shift_bytes_left(D[i-1], KS[i-1]))
+        k = C[i] + D[i]
+        K.append(perm(k, KP2))
+    for i in range(len(K)):
+        print("{}: K = {}[{}] C = {}[{}] D = {}[{}]".format(i,K[i],len(K[i]), C[i], len(C[i]), D[i], len(D[i])))
+    return C, D, K
 
-def round_function(L, R, key, i):
-    L.append(R[i-1])
-    e = expand(R[i-1])
-    x = ''
-    for j in range(48):
-        x += str(xor(key[j], e[j]))
-    T = re.findall("......", x)
-    for j in range(8):
-        T[j] = bin(SBOX_sub(T[j], j))[2:]
-    C = pad(int(''.join(T), 2), 20, 32)[0]
-    t = ''
-    t2 = ''
-    for j in range(32):
-        t += C[P[j]]
-    t = pad(int(t,2), 100, 32)[0]
-    print(len(L[0]), len(t))
-    for j in range(32):
-        t2 += str(xor(t[j], L[i-1][j]))
-    R.append(t2)
-    return L,R
+def round_func(A, J):
+    X = perm(A, E)
+    B = ''
+    for i in range(len(J)):
+        B += xor(X[i], J[i])
+    B = re.findall("......", B)
+    C = ''
+    for i in range(len(B)):
+        C += SBOX_sub(B[i], i)
+    C = perm(C, P)
+    return C
 
-def DES_encrypt(ciphertext, plaintext, key):
+def DES_encrypt(plaintext, K):
     L = []
     R = []
-    C,D = init_key(key)
-    plaintext=pad(int(plaintext, 16),int(plaintext, 16), 64)[0]
-    ciphertext = iperm(plaintext, IP)
-    L.append(ciphertext[:32])
-    R.append(ciphertext[32:])
-    for i in range(1,17):
-        C,D,k = create_key(C,D,i)
-        L,R = round_function(L, R, k, i)
-    ciphertext = R[16]+L[16]
-    ciphertext = iperm(ciphertext, IPI)
-    print(hex(int(ciphertext,2))[2:])
+    print("\nCalculating L and R:")
+    plaintext = string_to_bin(plaintext)
+
+    # Initial permutation
+    plaintext = perm(plaintext, IP)
+
+    # Init L & R
+    L.append(plaintext[:32])
+    R.append(plaintext[32:])
+
+    # exec encryption rouds
+    for i in range(1, 17):
+        L.append(R[i-1])
+        tmp = round_func(R[i-1], K[i])
+        R.append('')
+        for j in range(len(tmp)):
+            R[i] += xor(L[i-1][j], tmp[j])
+
+    ciphertext = perm(R[16] + L[16], IPI)
+
+    for i in range(len(R)):
+        print("{}: L = {}[{}] R = {}[{}] K = {}[{}]".format(i,L[i],len(L[i]), R[i], len(R[i]), K[i], len(K[i])))
+
+    print("\nEncrypted text: ", bin_to_hex(ciphertext))
+
 
 def main():
-    global plaintext
-    global ciphertext
-    global key
-    global IV
-    global triple
-
     parser = argparse.ArgumentParser(description="A python3 implementation on DES cryptosystem")
 
     # Implement triple DES (-t, --triple) | implement file encryption/decryption
@@ -86,19 +96,18 @@ def main():
         print("[ERROR]: the key must be of length 8")
         usage()
         exit(ERR_BADKEYLENGTH)
-    elif args.mode != 'EBC' and IV == None:
+    elif args.mode != 'ECB' and args.iv == None:
         print("[ERROR]: the requested mode needs an IV in order to work properly")
         usage()
         exit(ERR_IVNEEDED)
     else:
-        plaintext = prepare(args.plaintext)
-        ciphertext = prepare(args.ciphertext)
-        key = prepare(args.key)
-        IV = prepare(args.iv)
+        plaintext = args.plaintext
+        ciphertext = args.ciphertext
+        key = args.key
+        IV = args.iv
         triple = args.triple
-        #Implement menu, divisione del plaintext in blocchi TODO:
-        DES_encrypt(ciphertext, plaintext, key)
+        C, D, K = create_keys(key)
+        DES_encrypt(plaintext, K)
 
-
-if __name__ == '__main__':
+if __name__=="__main__":
     main()

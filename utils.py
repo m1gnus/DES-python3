@@ -1,79 +1,40 @@
-from Exp_Perms import *
 from SBox import *
+import re
 
-def pad(A, B, n):
-    t1 = bin(A)[2:]
-    t2 = bin(B)[2:]
-    t1 = '0'*(n-len(t1))+t1
-    t2 = '0'*(n-len(t2))+t2
-    return t1,t2
+def pad_bytes(A, n):
+    return '0'*(n-len(A))+A
 
-def shift_key(A, B, n):
-    A,B = pad(A,B, 28)
-    tmp = A[-n:]
-    A = A[n:]
-    A = A+tmp
-    tmp = B[-n:]
-    B = B[n:]
-    B = B + tmp
-    return A,B
+def shift_bytes_left(A, n):
+    return A[n:]+A[:n]
 
-def iperm(x, P):
-    tmp=[0 for i in range(64)]
-    for i in range(64):
-        tmp[P[i]] = x[i]
-    return ''.join(tmp)
+def shift_bytes_right(A, n):
+    return A[-n:]+A[:-n]
+
+def perm(A, P):
+    return ''.join([ A[i] for i in P ])
 
 def usage():
-    print("[Usage]: ", end='')
-    print("python3 DES.py -k [key] -m CBC -p [plaintext] -i [IV]")
-
-def prepare(s):
-    if s == None:
-        return None
-    tmp = ''
-    for i in s:
-        x = ord(i)
-        if x < 16:
-            tmp += '0'+hex(x)[2:]
-        else:
-            tmp += hex(x)[2:]
-    return tmp
+    print("[Usage]: python3 DES.py -k [key] -m CBC -p [plaintext] -i [IV]")
 
 def xor(A,B):
     if A==B:
-        return 0
+        return '0'
     else:
-        return 1
+        return '1'
 
-def init_key(key):
-    C = []
-    D = []
-    t = pad(int(key, 16), int(key, 16), 64)[0]
-    t2 = ''
-    for i in range(len(KP)):
-        t2 += t[KP[i]]
-    C.append(t2[:28])
-    D.append(t2[28:])
-    return C,D
+def string_to_bin(s):
+    tmp = ''
+    for i in s:
+        x = ord(i)
+        tmp += pad_bytes(bin(x)[2:], 8)
+    return tmp
 
-def create_key(C, D, i):
-    K = C[i-1]+D[i-1]
-    t = ''
-    for j in range(48):
-        t += K[KP2[j]]
-    t1,t2 = shift_key(int(C[i-1],2), int(D[i-1],2), KS[i-1])
-    C.append(t1)
-    D.append(t2)
-    return C,D,t
-
-def expand(A):
-    t = ''
-    for i in range(48):
-        t += A[E[i]]
-    return t
+def bin_to_hex(b):
+    L = re.findall("....", b)
+    tmp = ''.join( [hex(int(i,2))[2:] for i in L ] )
+    return tmp
 
 def SBOX_sub(s, l):
-    t1 = int(s[1] + s[-1],2)
-    t2 = int(s[2:-1], 2)
-    return SB[l][t1-1][t2-1]
+    i = int(s[1] + s[-1],2)
+    j = int(s[2:-1], 2)
+    return pad_bytes(bin(SB[l][i][j])[2:], 4)
