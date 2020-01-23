@@ -36,6 +36,21 @@ def bin_to_hex(b):
     tmp = ''.join( [hex(int(i,2))[2:] for i in L ] )
     return tmp
 
+def hex_to_bin(h):
+    tmp = ''
+    for i in h:
+        tmp += pad_bytes(bin(int(i,16))[2:], 4)
+    return tmp
+
+def hex_to_str(h):
+    tmp = ''
+    if len(h) % 2 == 1:
+        h = '0' + h
+    L = re.findall("..", h)
+    for i in L:
+        tmp += chr(int(i,16))
+    return tmp
+
 def SBOX_sub(s, l):
     i = int(s[0] + s[-1],2)
     j = int(s[1:-1], 2)
