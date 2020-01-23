@@ -21,9 +21,8 @@ modes of operation -- CBC OFB CFB counter_mode CCM
 def create_blocks(text, padding):
     if len(text)%64 != 0:
         text = text + '00001000'*(8 - (len(text) % 64)//8)
-    else:
-        if padding:
-            text = text + '00001000'*8
+    if padding:
+        text = text + '00001000'*8
     pattern = "."*64
     B = re.findall(pattern, text)
     return B
