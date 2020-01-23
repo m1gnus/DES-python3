@@ -57,11 +57,9 @@ def DES_encrypt(plaintext, K):
     R = []
     print("\nCalculating L and R:")
     plaintext = string_to_bin(plaintext)
-    print(bin_to_hex(plaintext))
 
     # Initial permutation
     plaintext = perm(plaintext, IP)
-    print(bin_to_hex(plaintext))
 
     # Init L & R
     L.append(plaintext[:32])
@@ -75,6 +73,7 @@ def DES_encrypt(plaintext, K):
         for j in range(len(tmp)):
             R[i] += xor(L[i-1][j], tmp[j])
 
+    # Final permutation
     ciphertext = perm(R[16] + L[16], IPI)
 
     for i in range(len(R)):
@@ -91,12 +90,12 @@ def main():
     parser.add_argument('-p', '--plain', dest='plaintext', action='store', default=None, help="plaintext to crypt")
     parser.add_argument('-c', '--cipher', dest='ciphertext', action='store', default=None, help="ciphertext to decrypt")
     parser.add_argument('-i', '--init-vector', dest='iv', action='store', default=None, help="initialization vector iv")
-    parser.add_argument('-m', '--mode', dest='mode', action='store', default=None, help="mode of operation")
+    parser.add_argument('-m', '--mode', dest='mode', action='store', default='ECB', help="mode of operation") #Migliora help e controlla che sia valida
     parser.add_argument('-t', '--triple', dest='triple', action='store_const', const=True, default=False, help="Use Triple DES")
 
     args = parser.parse_args()
 
-    if args.plaintext == args.ciphertext:
+    if (args.plaintext == None and args.ciphertext ==None) or (args.plaintext != None and args.ciphertext != None):
         print("[ERROR]: Please insert ciphertext only or plaintext only\n")
         usage()
         exit(ERR_BADARGS)
@@ -118,6 +117,7 @@ def main():
         key = args.key
         IV = args.iv
         triple = args.triple
+        mode = args.mode
         C, D, K = create_keys(key)
         DES_encrypt(plaintext, K)
 

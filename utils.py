@@ -37,6 +37,6 @@ def bin_to_hex(b):
     return tmp
 
 def SBOX_sub(s, l):
-    i = int(s[1] + s[-1],2)
-    j = int(s[2:-1], 2)
+    i = int(s[0] + s[-1],2)
+    j = int(s[1:-1], 2)
     return pad_bytes(bin(SB[l][i][j])[2:], 4)
