@@ -15,8 +15,7 @@ from utils import *
 """
 TODO:
 Triple-DES
-modes of operation
-lavoro sui file (leggere il file in ingresso byte per byte e scrivere quello decodificato)
+modes of operation -- CBC OFB CFB counter_mode CCM
 """
 
 def create_blocks(text, padding):
