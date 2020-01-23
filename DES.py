@@ -6,15 +6,25 @@
 ##
 
 import argparse
-import threading
 import re
 
 from Exp_Perms import *
 from Err_codes import *
 from utils import *
 
+"""
+TODO:
+Triple-DES
+padding
+multithreading
+menu
+modes of operation
+lavoro sui file (leggere il file in ingresso byte per byte e scrivere quello decodificato)
+passaggio della chiave in esadecimale (-xk --hexkey) de del testo (-xp --hexplain)
+"""
+
 def create_keys(key): # Create round keys by following the schedule
-    print("Generating key schedule...")
+    print("\nGenerating key schedule from ", bin_to_hex(pad_bytes(string_to_bin(key), 64)), " ...")
     K = []
     C = []
     D = []
@@ -47,9 +57,11 @@ def DES_encrypt(plaintext, K):
     R = []
     print("\nCalculating L and R:")
     plaintext = string_to_bin(plaintext)
+    print(bin_to_hex(plaintext))
 
     # Initial permutation
     plaintext = perm(plaintext, IP)
+    print(bin_to_hex(plaintext))
 
     # Init L & R
     L.append(plaintext[:32])

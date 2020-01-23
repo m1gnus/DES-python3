@@ -26,6 +26,8 @@ def string_to_bin(s):
     tmp = ''
     for i in s:
         x = ord(i)
+        if(len(hex(x)[2:]) > 2):
+            x = int(hex(x)[-2:], 16)
         tmp += pad_bytes(bin(x)[2:], 8)
     return tmp
 
