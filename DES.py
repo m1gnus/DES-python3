@@ -206,7 +206,7 @@ def main() -> None:
     parser.add_argument('-c', '--cipher', dest='ciphertext', action='store', default=None, help="ciphertext to decrypt")
     parser.add_argument('-i', '--init-vector', dest='iv', action='store', default=None, help="initialization vector iv")
     parser.add_argument('-x', '--hex', dest='hex_input', action='store_const', const=True, default=False, help="read input as hex value")
-    parser.add_argument('-m', '--mode', dest='mode', action='store', default='ECB', help="mode of operation") #Migliora help e controlla che sia valida
+    parser.add_argument('-m', '--mode', dest='mode', action='store', default='ECB', help="mode of operation (ECB, CBC, CFB, OFB, CTR)")
     parser.add_argument('-P', '--padding', dest='pad', action='store_const', const=True,  default=False, help="add 8 bytes of padding at the end of the ciphertext... use it for compatibility with cyberchef when the blocks are correctly divided without padding")
     parser.add_argument('-I', '--pad-iv', dest='piv', action='store_const', const=True,  default=False, help="pad iv if it's not long 64 bytes")
     parser.add_argument('-r', '--raw', dest='raw', action='store_const', const=True,  default=False, help="set raw outputs")
