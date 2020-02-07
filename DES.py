@@ -5,6 +5,8 @@
 # DES cipher/decipher
 ##
 
+# Optimize xor, implement files
+
 import argparse
 import re
 
