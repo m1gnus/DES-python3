@@ -17,7 +17,7 @@ def perm(A: str, P: list) -> str:
 def usage():
     print("[Usage]: python3 DES.py -k [key] -m CBC -p [plaintext] -i [IV]")
 
-def xor(A: str, B: str) -> str:
+def xor(A: str, B: str) -> str: # Ottimizzare, trasformare in intero e fare xor
     if A==B:
         return '0'
     else:
