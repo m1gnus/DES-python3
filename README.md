@@ -2,6 +2,7 @@
 an implementation of DES algorithm in python3
 # Positional Parameters
 
+```
 -k [KEY] -> the key must be of length 8 bytes, so 8 chars or 16 hex digits (if -x is set)
 
 -p [PLAIN] -> plaintext
@@ -19,3 +20,4 @@ an implementation of DES algorithm in python3
 -I -> pad IV if it's less than 8 bytes
 
 -r -> raw output
+```
